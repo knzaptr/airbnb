@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "../../assets/styles/styles";
 import { AuthContext } from "../../context/AuthContext";
 import Entypo from "@expo/vector-icons/Entypo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = () => {
   const router = useRouter();
@@ -24,6 +25,14 @@ const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
+  // const fetchStorage = async () => {
+  //   const id = await AsyncStorage.getItem("id");
+  //   const token = await AsyncStorage.getItem("token");
+  //   return { id, token };
+  // };
+
+  // const { id, token } = fetchStorage();
+
   const handleSubmit = async () => {
     try {
       const response = await axios.post(
@@ -35,6 +44,9 @@ const LoginScreen = () => {
       );
       setIsLoading(true);
       setErrorMessage(null);
+      await AsyncStorage.setItem("id", JSON.stringify(response.data.id));
+      await AsyncStorage.setItem("token", JSON.stringify(response.data.token));
+
       login(response.data.id, response.data.token);
     } catch (error) {
       if (error.response.data.error === "Missing parameter(s)") {
